@@ -14,11 +14,45 @@ A production-ready, plug-and-play OTP authentication library for CodeIgniter 4+ 
 
 1.  **Install via Composer**
 
-    ```bash
-    composer require sujeet/codeigniter4-otp-auth
+    You can install this package either locally (for development) or directly from GitHub.
+
+    ### Option A: Install from GitHub (Recommended)
+
+    Add the repository to your project's `composer.json`:
+
+    ```json
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Sujeet-shah/otp-plugin"
+        }
+    ],
     ```
 
-    *Note: Since this is a local package for now, you might need to add it as a path repository in your root `composer.json` if you are developing locally.*
+    Then run:
+
+    ```bash
+    composer require sujeet-shah/otp-plugin
+    ```
+
+    ### Option B: Local Installation (For Development)
+
+    Add the local path to your project's `composer.json`:
+
+    ```json
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/html/auth-plugin/packages/otp-auth"
+        }
+    ],
+    ```
+
+    Then run:
+
+    ```bash
+    composer require sujeet-shah/otp-plugin
+    ```
 
 2.  **Run Migrations**
 

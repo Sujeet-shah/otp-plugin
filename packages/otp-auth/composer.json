@@ -1,5 +1,5 @@
 {
-    "name": "sujeet/codeigniter4-otp-auth",
+    "name": "sujeet-shah/otp-plugin",
     "description": "A production-ready OTP authentication library for CodeIgniter 4",
     "license": "MIT",
     "authors": [
