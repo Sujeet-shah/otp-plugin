@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This makes our life easier when dealing with paths.
+ */
+chdir(__DIR__);
+
+/*
+ * Load the autoloader
+ */
+require 'vendor/autoload.php';
+
+// Define path constants
+define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);
+define('SYSTEMPATH', realpath(__DIR__ . '/vendor/codeigniter4/framework/system') . DIRECTORY_SEPARATOR);
+define('APPPATH', realpath(__DIR__ . '/app') . DIRECTORY_SEPARATOR);
+define('ROOTPATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
+define('WRITEPATH', realpath(__DIR__ . '/writable') . DIRECTORY_SEPARATOR);
+
+// Fire up the engine
+$app = Config\Services::codeigniter();
+$app->initialize();
+$context = is_cli() ? 'php-cli' : 'web';
+$app->setContext($context);
+
+// Run it
+$app->run();

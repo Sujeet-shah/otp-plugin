@@ -1,0 +1,25 @@
+# Environment
+.env
+.env.test
+
+# Dependencies
+/vendor/
+
+# Writable directory
+/writable/*
+!/writable/index.html
+!/writable/.gitkeep
+
+# Testing
+.phpunit.result.cache
+/tests/_support/_generated/
+
+# IDEs and Tools
+.vscode/
+.idea/
+*.log
+.php-cs-fixer.cache
+
+# User Guide
+/user_guide_src/
+/user_guide_html/
