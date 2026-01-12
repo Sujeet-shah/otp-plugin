@@ -14,7 +14,7 @@ class OtpAuth extends BaseConfig
     /**
      * OTP Expiry Time in Seconds
      */
-    public $expirySeconds = 300; // 5 minutes
+    public $expirySeconds = ""; // 5 minutes
 
     /**
      * Max Attempts before invalidating
@@ -31,7 +31,7 @@ class OtpAuth extends BaseConfig
     public function __construct()
     {
         parent::__construct();
-
+        $this->expirySeconds = getenv('EXPIRY_DURATION_IN_SECOND') ?: 300; // 5 minutes
         // Load from .env if available
         $this->twilioSid = getenv('TWILIO_SID') ?: '';
         $this->twilioToken = getenv('TWILIO_TOKEN') ?: '';
