@@ -13,10 +13,10 @@ class OtpController extends ResourceController
 
     public function send()
     {
-        $identifier = $this->request->getVar('identifier');
+        $identifier = $this->request->getVar('phone');
 
         if (!$identifier) {
-            return $this->fail('Identifier is required', 400);
+            return $this->fail('phone number is required', 400);
         }
 
         if ($this->sendOtpTo($identifier)) {
@@ -28,11 +28,11 @@ class OtpController extends ResourceController
 
     public function verify()
     {
-        $identifier = $this->request->getVar('identifier');
+        $identifier = $this->request->getVar('phone');
         $code = $this->request->getVar('code');
 
         if (!$identifier || !$code) {
-            return $this->fail('Identifier and code are required', 400);
+            return $this->fail('phone number and code are required', 400);
         }
 
         if ($this->verifyOtpFor($identifier, $code)) {

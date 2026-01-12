@@ -271,8 +271,10 @@ $routes->post('otp/send', 'AuthController::sendOtp');
 $routes->post('otp/verify', 'AuthController::verifyOtp');
 
 // Or using the built-in OtpController
-$routes->post('otp/send', 'OtpAuth\Controllers\OtpController::send');
-$routes->post('otp/verify', 'OtpAuth\Controllers\OtpController::verify');
+$routes->group('otp', ['namespace' => 'OtpAuth\Controllers'], function ($routes) {
+    $routes->post('send', 'OtpController::send');
+    $routes->post('verify', 'OtpController::verify');
+});
 ```
 
 ---
