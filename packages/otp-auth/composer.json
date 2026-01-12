@@ -1,27 +1,17 @@
 {
     "name": "sujeet-shah/otp-plugin",
-    "description": "A production-ready OTP authentication library for CodeIgniter 4",
+    "description": "OTP Authentication Plugin for CodeIgniter 4",
+    "type": "library",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Sujeet Shah",
-            "email": "sujeet@example.com"
-        }
-    ],
-    "keywords": [
-        "codeigniter4",
-        "otp",
-        "authentication",
-        "twilio",
-        "sms"
-    ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": ">=7.4",
         "codeigniter4/framework": "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "OtpAuth\\": "src/"
+            "OtpPlugin\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
