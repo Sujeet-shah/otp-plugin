@@ -20,7 +20,7 @@ class CreateOtpTables extends Migration
                 'constraint' => '255',
             ],
             'user_id' => [
-                'type' => 'NUMBER',
+                'type' => 'INT',
                 'default' => NULL,
             ],
             'code' => [
@@ -47,7 +47,7 @@ class CreateOtpTables extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->addKey('identifier');
+        // $this->forge->addKey('identifier');
         $this->forge->addKey('expires_at');
         $this->forge->createTable('otp_requests');
     }
