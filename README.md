@@ -34,7 +34,7 @@ composer require sujeet-shah/otp-plugin
 Create the necessary database tables:
 
 ```bash
-php spark migrate -n -g OtpAuth
+php spark migrate -n  OtpAuth
 ```
 
 ### 3. Configure Environment
@@ -115,8 +115,8 @@ class AuthController extends BaseController
 The package includes a controller with ready-to-use endpoints. Simply register them in your `app/Config/Routes.php`:
 
 ```php
-$routes->post('api/otp/send', '\OtpAuth\Controllers\OtpController::send');
-$routes->post('api/otp/verify', '\OtpAuth\Controllers\OtpController::verify');
+$routes->post('otp/send', '\OtpAuth\Controllers\OtpController::send');
+$routes->post('otp/verify', '\OtpAuth\Controllers\OtpController::verify');
 ```
 
 ---
@@ -133,7 +133,7 @@ You can publish the configuration file to customize the plugin behavior:
 | :--- | :--- | :--- | :--- |
 | `codeLength` | `OTP_LENGTH` | `6` | Length of the generated OTP code. |
 | `expirySeconds` | `EXPIRY_DURATION_IN_SECOND` | `300` | Time in seconds before OTP expires. |
-| `maxAttempts` | - | `3` | Maximum verification attempts allowed. |
+| `maxAttempts` | `MAX_ATTEMPTS` | `3` | Maximum verification attempts allowed. |
 
 ---
 
