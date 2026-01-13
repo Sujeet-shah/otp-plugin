@@ -9,7 +9,7 @@ class OtpAuth extends BaseConfig
     /**
      * OTP Code Length
      */
-    public $codeLength = 6;
+    public $codeLength = '';
 
     /**
      * OTP Expiry Time in Seconds
@@ -32,6 +32,7 @@ class OtpAuth extends BaseConfig
     {
         parent::__construct();
         $this->expirySeconds = getenv('EXPIRY_DURATION_IN_SECOND') ?: 300; // 5 minutes
+        $this->codeLength = getenv('OTP_LENGTH') ?: 6;
         // Load from .env if available
         $this->twilioSid = getenv('TWILIO_SID') ?: '';
         $this->twilioToken = getenv('TWILIO_TOKEN') ?: '';
