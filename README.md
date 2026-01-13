@@ -14,7 +14,6 @@ A production-ready, plug-and-play OTP (One-Time Password) authentication library
 - **✅ Plug-and-Play**: Seamless integration with CodeIgniter 4.
 - **🗄️ Database Support**: Fully compatible with MySQL and PostgreSQL.
 - **📱 Twilio Integration**: Built-in provider for sending SMS via Twilio.
-- **🔒 Secure by Design**: OTPs are hashed before storage for maximum security.
 - **⚙️ Highly Configurable**: Customize OTP length, expiry duration, and maximum retry attempts.
 - **🛠️ Flexible Usage**: Use via Service, Trait, or pre-built API endpoints.
 
@@ -51,6 +50,7 @@ TWILIO_FROM=your_twilio_phone_number
 # Optional OTP Settings
 OTP_LENGTH=6
 EXPIRY_DURATION_IN_SECOND=300
+MAX_ATTEMPTS=3
 ```
 
 ---
