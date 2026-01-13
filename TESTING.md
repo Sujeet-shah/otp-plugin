@@ -69,7 +69,7 @@ Edit `packages/otp-auth/src/Libraries/OtpService.php` and modify the `generate()
 
 ```php
 // After generating the code
-log_message('info', 'Generated OTP: ' . $code . ' for ' . $identifier);
+log_message('info', 'Generated OTP: ' . $code . ' for ' . $phone);
 ```
 
 Then check `writable/logs/log-YYYY-MM-DD.log`
@@ -94,11 +94,11 @@ curl -X POST http://localhost:8080/verify-otp \
 ```bash
 # Send
 curl -X POST http://localhost:8080/otp/send \
-  -d "identifier=+1234567890"
+  -d "phone=+1234567890"
 
 # Verify  
 curl -X POST http://localhost:8080/otp/verify \
-  -d "identifier=+1234567890&code=123456"
+  -d "phone=+1234567890&code=123456"
 ```
 
 ## Manual Testing Steps

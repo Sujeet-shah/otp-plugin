@@ -12,7 +12,7 @@ class OtpModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = ['identifier', 'code', 'created_at', 'expires_at', 'attempts', 'is_verified'];
+    protected $allowedFields = ['phone','user_id', 'code', 'created_at', 'expires_at', 'attempts', 'is_verified'];
 
     // Dates
     protected $useTimestamps = false;
@@ -21,10 +21,10 @@ class OtpModel extends Model
     protected $updatedField = '';
     protected $deletedField = '';
 
-    public function createOtp(string $identifier, string $hashedCode, int $expirySeconds)
+    public function createOtp(string $phone, string $hashedCode, int $expirySeconds)
     {
         $data = [
-            'identifier' => $identifier,
+            'phone' => $phone,
             'code' => $hashedCode,
             'created_at' => date('Y-m-d H:i:s'),
             'expires_at' => date('Y-m-d H:i:s', time() + $expirySeconds),
@@ -35,9 +35,9 @@ class OtpModel extends Model
         return $this->insert($data);
     }
 
-    public function findValidOtp(string $identifier)
+    public function findValidOtp(string $phone)
     {
-        return $this->where('identifier', $identifier)
+        return $this->where('phone', $phone)
             ->where('expires_at >', date('Y-m-d H:i:s'))
             ->where('is_verified', 0)
             ->orderBy('created_at', 'DESC')

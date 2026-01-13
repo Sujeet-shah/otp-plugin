@@ -16,13 +16,13 @@ trait OtpAuthentication
         return $this->otpService;
     }
 
-    public function sendOtpTo(string $identifier)
+    public function sendOtpTo(string $phone)
     {
-        return $this->getOtpService()->generate($identifier);
+        return $this->getOtpService()->generate($phone);
     }
 
-    public function verifyOtpFor(string $identifier, string $code)
+    public function verifyOtpFor(string $phone, string $code)
     {
-        return $this->getOtpService()->verify($identifier, $code);
+        return $this->getOtpService()->verify($phone, $code);
     }
 }

@@ -13,13 +13,13 @@ class OtpController extends ResourceController
 
     public function send()
     {
-        $identifier = $this->request->getVar('phone');
+        $phone = $this->request->getVar('phone');
 
-        if (!$identifier) {
+        if (!$phone) {
             return $this->fail('phone number is required', 400);
         }
 
-        if ($this->sendOtpTo($identifier)) {
+        if ($this->sendOtpTo($phone)) {
             return $this->respond(['message' => 'OTP sent successfully']);
         }
 
@@ -28,14 +28,14 @@ class OtpController extends ResourceController
 
     public function verify()
     {
-        $identifier = $this->request->getVar('phone');
+        $phone = $this->request->getVar('phone');
         $code = $this->request->getVar('code');
 
-        if (!$identifier || !$code) {
+        if (!$phone || !$code) {
             return $this->fail('phone number and code are required', 400);
         }
 
-        if ($this->verifyOtpFor($identifier, $code)) {
+        if ($this->verifyOtpFor($phone, $code)) {
             return $this->respond(['message' => 'OTP verified successfully']);
         }
 

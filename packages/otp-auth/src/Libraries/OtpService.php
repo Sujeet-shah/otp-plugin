@@ -34,7 +34,7 @@ class OtpService
     /**
      * Generate and send OTP
      */
-    public function generate(string $identifier): bool
+    public function generate(string $phone): bool
     {
         // Cleanup old OTPs
         $this->model->cleanupExpired();
@@ -49,11 +49,11 @@ class OtpService
         $hashedCode = password_hash($code, PASSWORD_BCRYPT);
 
         // Save to DB
-        $this->model->createOtp($identifier, $hashedCode, $this->config->expirySeconds);
+        $this->model->createOtp($phone, $hashedCode, $this->config->expirySeconds);
 
         // Send SMS
         if ($this->smsProvider) {
-            return $this->smsProvider->send($identifier, "Your OTP code is: {$code}");
+            return $this->smsProvider->send($phone, "Your OTP code is: {$code}");
         }
 
         // If no provider, we assume it's for testing or manual handling (e.g. email)
@@ -70,9 +70,9 @@ class OtpService
     /**
      * Verify OTP
      */
-    public function verify(string $identifier, string $code): bool
+    public function verify(string $phone, string $code): bool
     {
-        $otp = $this->model->findValidOtp($identifier);
+        $otp = $this->model->findValidOtp($phone);
 
         if (!$otp) {
             return false;

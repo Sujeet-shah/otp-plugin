@@ -47,7 +47,7 @@ class CreateOtpTables extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);
-        // $this->forge->addKey('identifier');
+        // $this->forge->addKey('phone');
         $this->forge->addKey('expires_at');
         $this->forge->createTable('otp_requests');
     }
