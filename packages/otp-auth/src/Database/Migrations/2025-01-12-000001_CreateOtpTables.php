@@ -15,9 +15,13 @@ class CreateOtpTables extends Migration
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'identifier' => [
+            'phone' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
+            ],
+            'user_id' => [
+                'type' => 'NUMBER',
+                'default' => NULL,
             ],
             'code' => [
                 'type' => 'VARCHAR',
