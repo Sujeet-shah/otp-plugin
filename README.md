@@ -1,111 +1,98 @@
-# OTP Authentication Plugin for CodeIgniter 4
+# CodeIgniter 4 OTP Authentication Plugin
 
-A production-ready, plug-and-play OTP authentication library for CodeIgniter 4+ that enables any developer to add OTP functionality to their application in under 5 minutes.
+[![Latest Stable Version](https://img.shields.io/packagist/v/sujeet-shah/otp-plugin.svg?style=flat-square)](https://packagist.org/packages/sujeet-shah/otp-plugin)
+[![Total Downloads](https://img.shields.io/packagist/dt/sujeet-shah/otp-plugin.svg?style=flat-square)](https://packagist.org/packages/sujeet-shah/otp-plugin)
+[![License](https://img.shields.io/packagist/l/sujeet-shah/otp-plugin.svg?style=flat-square)](https://packagist.org/packages/sujeet-shah/otp-plugin)
+[![PHP Version](https://img.shields.io/packagist/php-v/sujeet-shah/otp-plugin.svg?style=flat-square)](https://packagist.org/packages/sujeet-shah/otp-plugin)
 
-## Features
+A production-ready, plug-and-play OTP (One-Time Password) authentication library for CodeIgniter 4. Add secure OTP functionality to your application in under 5 minutes.
 
-- **Plug-and-Play**: Install via Composer and start using.
-- **Database Support**: MySQL and PostgreSQL compatible.
-- **Twilio Integration**: Built-in support for sending SMS via Twilio.
-- **Secure**: OTPs are hashed before storage.
-- **Configurable**: Customize OTP length, expiry time, and max attempts.
+---
 
-## Installation
+## 🚀 Features
 
-1.  **Install via Composer**
+- **✅ Plug-and-Play**: Seamless integration with CodeIgniter 4.
+- **🗄️ Database Support**: Fully compatible with MySQL and PostgreSQL.
+- **📱 Twilio Integration**: Built-in provider for sending SMS via Twilio.
+- **🔒 Secure by Design**: OTPs are hashed before storage for maximum security.
+- **⚙️ Highly Configurable**: Customize OTP length, expiry duration, and maximum retry attempts.
+- **🛠️ Flexible Usage**: Use via Service, Trait, or pre-built API endpoints.
 
-    You can install this package either locally (for development) or directly from GitHub.
+---
 
-    ### Option A: Install from GitHub (Recommended)
+## 📦 Installation
 
-    Add the repository to your project's `composer.json`:
+### 1. Install via Composer
 
-    ```json
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Sujeet-shah/otp-plugin"
-        }
-    ],
-    ```
+You can install the package via composer:
 
-    Then run:
+```bash
+composer require sujeet-shah/otp-plugin
+```
 
-    ```bash
-    composer require sujeet-shah/otp-plugin
-    ```
+### 2. Run Migrations
 
-    ### Option B: Local Installation (For Development)
+Create the necessary database tables:
 
-    Add the local path to your project's `composer.json`:
+```bash
+php spark migrate -n -g OtpAuth
+```
 
-    ```json
-    "repositories": [
-        {
-            "type": "path",
-            "url": "/var/www/html/auth-plugin/packages/otp-auth"
-        }
-    ],
-    ```
+### 3. Configure Environment
 
-    Then run:
+Add your Twilio credentials and optional settings to your `.env` file:
 
-    ```bash
-    composer require sujeet-shah/otp-plugin
-    ```
+```env
+# Twilio Credentials
+TWILIO_SID=your_account_sid
+TWILIO_TOKEN=your_auth_token
+TWILIO_FROM=your_twilio_phone_number
 
-2.  **Run Migrations**
+# Optional OTP Settings
+OTP_LENGTH=6
+EXPIRY_DURATION_IN_SECOND=300
+```
 
-    ```bash
-    php spark migrate -n -g OtpAuth
-    ```
+---
 
-3.  **Configure Environment**
+## 🛠️ Usage
 
-    Add your Twilio credentials to your `.env` file:
+### Option 1: Using the Service (Recommended)
 
-    ```env
-    TWILIO_SID=your_sid
-    TWILIO_TOKEN=your_token
-    TWILIO_FROM=your_twilio_number
-    ```
-
-## Usage
-
-### Using the Service
-
-You can access the OTP service via the global `service()` helper:
+The most flexible way to use the plugin is via the `otp` service.
 
 ```php
 $otp = service('otp');
 
-// Generate and send OTP
+// 1. Generate and send OTP to a phone number
 $otp->generate('+1234567890');
 
-// Verify OTP
+// 2. Verify an OTP entered by the user
 if ($otp->verify('+1234567890', '123456')) {
-    echo "Verified!";
+    echo "Verification successful!";
 } else {
-    echo "Invalid or Expired";
+    echo "Invalid or expired OTP.";
 }
 ```
 
-### Using the Trait in Controllers
+### Option 2: Using the Trait in Controllers
 
-Add the `OtpAuthentication` trait to your controller:
+Easily add OTP capabilities to any controller using the `OtpAuthentication` trait.
 
 ```php
+namespace App\Controllers;
+
 use OtpAuth\Traits\OtpAuthentication;
 
-class Auth extends BaseController
+class AuthController extends BaseController
 {
     use OtpAuthentication;
 
-    public function login()
+    public function send()
     {
         $phone = $this->request->getPost('phone');
         $this->sendOtpTo($phone);
-        return view('verify_otp');
+        return $this->response->setJSON(['status' => 'success']);
     }
 
     public function verify()
@@ -114,17 +101,67 @@ class Auth extends BaseController
         $code  = $this->request->getPost('code');
 
         if ($this->verifyOtpFor($phone, $code)) {
-            // Log user in
+            // Logic for successful login
+            return $this->response->setJSON(['status' => 'verified']);
         }
+
+        return $this->response->setJSON(['status' => 'failed'], 401);
     }
 }
 ```
 
-### Using Pre-built Endpoints
+### Option 3: Pre-built API Endpoints
 
-The package comes with a controller that exposes `/otp/send` and `/otp/verify` endpoints. You may need to set up routes to point to `OtpAuth\Controllers\OtpController`.
+The package includes a controller with ready-to-use endpoints. Simply register them in your `app/Config/Routes.php`:
 
 ```php
-$routes->post('otp/send', '\OtpAuth\Controllers\OtpController::send');
-$routes->post('otp/verify', '\OtpAuth\Controllers\OtpController::verify');
+$routes->post('api/otp/send', '\OtpAuth\Controllers\OtpController::send');
+$routes->post('api/otp/verify', '\OtpAuth\Controllers\OtpController::verify');
 ```
+
+---
+
+## ⚙️ Configuration
+
+You can publish the configuration file to customize the plugin behavior:
+
+```bash
+# (Optional) If you want to customize the config class directly
+```
+
+| Key | Environment Variable | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `codeLength` | `OTP_LENGTH` | `6` | Length of the generated OTP code. |
+| `expirySeconds` | `EXPIRY_DURATION_IN_SECOND` | `300` | Time in seconds before OTP expires. |
+| `maxAttempts` | - | `3` | Maximum verification attempts allowed. |
+
+---
+
+## 🧪 Testing
+
+The package comes with a comprehensive testing guide. See [TESTING.md](TESTING.md) for details on how to run tests and mock SMS providers.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Author
+
+**Sujeet Shah**
+- GitHub: [@Sujeet-shah](https://github.com/Sujeet-shah)
