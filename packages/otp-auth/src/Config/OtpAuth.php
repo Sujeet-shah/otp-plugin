@@ -27,7 +27,7 @@ class OtpAuth extends BaseConfig
     public $twilioSid = '';
     public $twilioToken = '';
     public $twilioFrom = '';
-
+    public $auth_mode = '';
     public function __construct()
     {
         parent::__construct();
@@ -37,5 +37,6 @@ class OtpAuth extends BaseConfig
         $this->twilioSid = getenv('TWILIO_SID') ?: '';
         $this->twilioToken = getenv('TWILIO_TOKEN') ?: '';
         $this->twilioFrom = getenv('TWILIO_FROM') ?: '';
+        $this->auth_mode = getenv('AUTH_MODE') ?: '';
     }
 }

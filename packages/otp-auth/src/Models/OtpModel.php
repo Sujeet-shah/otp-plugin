@@ -12,7 +12,7 @@ class OtpModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = ['phone','user_id', 'code', 'created_at', 'expires_at', 'attempts', 'is_verified'];
+    protected $allowedFields = ['identifier', 'code', 'created_at', 'expires_at', 'attempts', 'is_verified'];
 
     // Dates
     protected $useTimestamps = false;
@@ -21,10 +21,10 @@ class OtpModel extends Model
     protected $updatedField = '';
     protected $deletedField = '';
 
-    public function createOtp(string $phone, string $hashedCode, int $expirySeconds)
+    public function createOtp(string $identifier, string $hashedCode, int $expirySeconds)
     {
         $data = [
-            'phone' => $phone,
+            'identifier' => $identifier,
             'code' => $hashedCode,
             'created_at' => date('Y-m-d H:i:s'),
             'expires_at' => date('Y-m-d H:i:s', time() + $expirySeconds),
@@ -35,9 +35,9 @@ class OtpModel extends Model
         return $this->insert($data);
     }
 
-    public function findValidOtp(string $phone)
+    public function findValidOtp(string $identifier)
     {
-        return $this->where('phone', $phone)
+        return $this->where('identifier', $identifier)
             ->where('expires_at >', date('Y-m-d H:i:s'))
             ->where('is_verified', 0)
             ->orderBy('created_at', 'DESC')
@@ -49,6 +49,22 @@ class OtpModel extends Model
         return $this->where('expires_at <=', date('Y-m-d H:i:s'))
             ->orWhere('is_verified', 1)
             ->delete();
+    }
+
+    public function otpCount(string $identifier){
+
+       $fiveMinAgo = date('Y-m-d H:i:s', strtotime('-1 minutes'));
+
+
+        $count = $this->selectCount('id')
+                ->where('identifier', $identifier)
+                ->where('created_at >=', $fiveMinAgo)
+                ->get()
+                ->getRow()
+                ->id;
+                
+                return $count;
+
     }
 
     public function incrementAttempts(int $id)

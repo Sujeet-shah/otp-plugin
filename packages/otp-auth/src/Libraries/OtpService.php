@@ -34,8 +34,10 @@ class OtpService
     /**
      * Generate and send OTP
      */
-    public function generate(string $phone): bool
-    {
+    public function generate(string $identifier): bool
+    {    $count = $this->model->otpCount($identifier);
+        $otpCount=$count+1;
+        if($otpCount <= getenv('OTP_LIMIT_IN_MINUTS')){
         // Cleanup old OTPs
         $this->model->cleanupExpired();
 
@@ -46,33 +48,69 @@ class OtpService
         }
 
         // Hash Code
-        $hashedCode = password_hash($code, PASSWORD_BCRYPT);
-
+        $hashedCode = $code;
+        $data['otp'] = $code;
+        
+       
+        // $body = ;"your otp is".$code;
+       
         // Save to DB
-        $this->model->createOtp($phone, $hashedCode, $this->config->expirySeconds);
-
-        // Send SMS
-        if ($this->smsProvider) {
-            return $this->smsProvider->send($phone, "Your OTP code is: {$code}");
+        $this->model->createOtp($identifier, $hashedCode, $this->config->expirySeconds);
+        if ($this->config->auth_mode == 'phone') {
+            // Send SMS
+            $body = view('OtpAuth\Views\otpPhoneTamplate',$data);
+            if ($this->smsProvider) {
+               
+                return true; 
+                // $this->smsProvider->send($identifier, $body);
+            }
         }
-
-        // If no provider, we assume it's for testing or manual handling (e.g. email)
-        // In a real plugin, we might want to return the code or throw an error if no provider.
-        // For this requirement, "Modify OtpService to automatically send the OTP via Twilio after generation."
-        // So we return false if no provider is set but we expected one.
-        // However, for testing purposes, we might want to allow generation without sending.
-        // Let's log a warning if no provider.
+        if ($this->config->auth_mode == 'email') {
+              $body = view('OtpAuth\Views\otpEmailTemplate',$data);
+            return true;
+            // $this->sendEmailOtp($identifier, $body);
+        }
         log_message('warning', 'OtpService: No SMS provider configured. OTP generated but not sent.');
-
+        
         return true;
+    }else{ 
+        return false;
+    }
+    }
+
+    /**
+     * Send OTP via Email
+     */
+    private function sendEmailOtp(string $email, string $message): bool
+    {     
+        try {
+            $mail = new \PHPMailer\PHPMailer\PHPMailer();
+            $mail->isSMTP();
+            $mail->Host = getenv('MAIL_HOST') ?: 'localhost';
+            $mail->Port = getenv('MAIL_PORT') ?: 587;
+            $mail->SMTPAuth = true;
+            $mail->Username = getenv('MAIL_USERNAME') ?: '';
+            $mail->Password = getenv('MAIL_PASSWORD') ?: '';
+            $mail->SMTPSecure = getenv('MAIL_ENCRYPTION') ?: 'tls';
+            $mail->setFrom(getenv('MAIL_FROM') ?: 'noreply@example.com', 'OTP Service');
+            $mail->addAddress($email);
+            $mail->isHTML(true);
+            $mail->Subject = 'Your OTP Code';
+            $mail->Body = $message;
+            
+            return $mail->send();
+        } catch (\Exception $e) {
+            log_message('error', 'OtpService: Failed to send email OTP - ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
      * Verify OTP
      */
-    public function verify(string $phone, string $code): bool
+    public function verify(string $identifier, string $code): bool
     {
-        $otp = $this->model->findValidOtp($phone);
+        $otp = $this->model->findValidOtp($identifier);
 
         if (!$otp) {
             return false;
@@ -84,7 +122,7 @@ class OtpService
         }
 
         // Verify Hash
-        if (password_verify($code, $otp['code'])) {
+        if ($code == $otp['code']) {
             // Success - Delete OTP (or mark verified)
             $this->model->delete($otp['id']);
             return true;

@@ -15,13 +15,9 @@ class CreateOtpTables extends Migration
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'phone' => [
+            'identifier' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
-            ],
-            'user_id' => [
-                'type' => 'INT',
-                'default' => NULL,
             ],
             'code' => [
                 'type' => 'VARCHAR',
@@ -47,7 +43,7 @@ class CreateOtpTables extends Migration
             ],
         ]);
         $this->forge->addKey('id', true);
-        // $this->forge->addKey('phone');
+        $this->forge->addKey('identifier');
         $this->forge->addKey('expires_at');
         $this->forge->createTable('otp_requests');
     }

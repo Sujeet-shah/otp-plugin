@@ -1,0 +1,1 @@
+<p>your otp is <?= $otp ?></p>
