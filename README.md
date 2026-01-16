@@ -73,18 +73,19 @@ MAIL_FROM=noreply@example.com
 The most flexible way to use the plugin is via the `otp` service.
 
 ```php
-$otp = service('otp');
+use OtpAuth\Libraries\OtpService;
+$otpService = new OtpService();
 
 // 1. Generate and send OTP
 $identifier = '+1234567890'; // or 'user@example.com'
-if ($otp->generate($identifier)) {
+if ($otpService->generate($identifier)) {
     echo "OTP sent successfully!";
 } else {
     echo "Failed to send OTP (possibly rate limited).";
 }
 
 // 2. Verify an OTP entered by the user
-if ($otp->verify($identifier, '123456')) {
+if ($otpService->verify($identifier, '123456')) {
     echo "Verification successful!";
 } else {
     echo "Invalid or expired OTP.";
