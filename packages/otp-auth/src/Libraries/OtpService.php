@@ -31,58 +31,83 @@ class OtpService
         }
     }
 
+
+
+    /**
+     * custom body tosend OTP
+     */
+
+    public function getBody(string $otp, ?string $body = null): string
+    {
+        // If user provides custom body, replace OTP placeholder
+        if (!empty($body)) {
+            return str_replace('{otp}', $otp, $body);
+        }
+
+        // Otherwise load package default template
+        $data = ['otp' => $otp];
+
+        if ($this->config->auth_mode === 'phone') {
+            return view('OtpAuth\Views\otpPhoneTamplate', $data);
+        }
+
+        return view('OtpAuth\Views\otpEmailTemplate', $data);
+    }
+
+
     /**
      * Generate and send OTP
      */
-    public function generate(string $identifier): bool
-    {    $count = $this->model->otpCount($identifier);
-        $otpCount=$count+1;
-        if($otpCount <= getenv('OTP_LIMIT_IN_MINUTS')){
-        // Cleanup old OTPs
-        $this->model->cleanupExpired();
+    public function generate(string $identifier, $body = null): bool
+    {
+        $count = $this->model->otpCount($identifier);
+        $otpCount = $count + 1;
+        if ($otpCount <= getenv('OTP_LIMIT_IN_MINUTS')) {
+            // Cleanup old OTPs
+            $this->model->cleanupExpired();
 
-        // Generate Code
-        $code = '';
-        for ($i = 0; $i < $this->config->codeLength; $i++) {
-            $code .= mt_rand(0, 9);
-        }
-
-        // Hash Code
-        $hashedCode = $code;
-        $data['otp'] = $code;
-        
-       
-        // $body = ;"your otp is".$code;
-       
-        // Save to DB
-        $this->model->createOtp($identifier, $hashedCode, $this->config->expirySeconds);
-        if ($this->config->auth_mode == 'phone') {
-            // Send SMS
-            $body = view('OtpAuth\Views\otpPhoneTamplate',$data);
-            if ($this->smsProvider) {
-               
-                return true; 
-                // $this->smsProvider->send($identifier, $body);
+            // Generate Code
+            $code = '';
+            for ($i = 0; $i < $this->config->codeLength; $i++) {
+                $code .= mt_rand(0, 9);
             }
-        }
-        if ($this->config->auth_mode == 'email') {
-              $body = view('OtpAuth\Views\otpEmailTemplate',$data);
+
+            // Hash Code
+            $hashedCode = $code;
+            $data['otp'] = $code;
+
+
+            $body = $this->getBody($code, $body);
+
+            // Save to DB
+            $this->model->createOtp($identifier, $hashedCode, $this->config->expirySeconds);
+            if ($this->config->auth_mode == 'phone') {
+                // Send SMS
+                $body = view('OtpAuth\Views\otpPhoneTamplate', $data);
+                if ($this->smsProvider) {
+
+                    return true;
+                    // $this->smsProvider->send($identifier, $body);
+                }
+            }
+            if ($this->config->auth_mode == 'email') {
+                $body = view('OtpAuth\Views\otpEmailTemplate', $data);
+                return true;
+                // $this->sendEmailOtp($identifier, $body);
+            }
+            log_message('warning', 'OtpService: No SMS provider configured. OTP generated but not sent.');
+
             return true;
-            // $this->sendEmailOtp($identifier, $body);
+        } else {
+            return false;
         }
-        log_message('warning', 'OtpService: No SMS provider configured. OTP generated but not sent.');
-        
-        return true;
-    }else{ 
-        return false;
-    }
     }
 
     /**
      * Send OTP via Email
      */
     private function sendEmailOtp(string $email, string $message): bool
-    {     
+    {
         try {
             $mail = new \PHPMailer\PHPMailer\PHPMailer();
             $mail->isSMTP();
@@ -97,7 +122,7 @@ class OtpService
             $mail->isHTML(true);
             $mail->Subject = 'Your OTP Code';
             $mail->Body = $message;
-            
+
             return $mail->send();
         } catch (\Exception $e) {
             log_message('error', 'OtpService: Failed to send email OTP - ' . $e->getMessage());
