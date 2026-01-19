@@ -86,14 +86,14 @@ class OtpService
                 $body = view('OtpAuth\Views\otpPhoneTamplate', $data);
                 if ($this->smsProvider) {
 
-                    return true;
-                    // $this->smsProvider->send($identifier, $body);
+                    // return true;
+                    return $this->smsProvider->send($identifier, $body);
                 }
             }
             if ($this->config->auth_mode == 'email') {
                 $body = view('OtpAuth\Views\otpEmailTemplate', $data);
-                return true;
-                // $this->sendEmailOtp($identifier, $body);
+                // return true;
+                return $this->sendEmailOtp($identifier, $body);
             }
             log_message('warning', 'OtpService: No SMS provider configured. OTP generated but not sent.');
 
